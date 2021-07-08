@@ -71,8 +71,11 @@ Stream<String> lineStream =
 Stream<String> stream1 = Stream.of("Java", "Scala", "Groovy");
 Stream<String> stream2 = Stream.of("Python", "Go", "Swift");
 Stream<String> concat = Stream.concat(stream1, stream2);
-// [Java, Scala, Groovy, Python, Go, Swift]
 ```
+<br>
+<br>
+<hr>
+
 ### ✍ 2. Map
 - 거의 HashMap을 사용
 
