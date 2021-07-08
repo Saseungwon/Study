@@ -73,3 +73,114 @@ Stream<String> stream2 = Stream.of("Python", "Go", "Swift");
 Stream<String> concat = Stream.concat(stream1, stream2);
 // [Java, Scala, Groovy, Python, Go, Swift]
 ```
+### ✍ 2. Map
+- 거의 HashMap을 사용
+
+
+##### (1) HashMap 개념 
+- Map은 키와 값으로 구성된 Entry객체를 저장하는 구조를 가지고 있는 자료구조다. 
+- 키와 값은 모두 객체 
+- 값은 중복 저장될 수 있지만 키는 중복 저장될 수 없음 
+- 만약 기존에 저장된 키와 동일한 키로 값을 저장하면 기존의 값은 없어지고 새로운 값으로 대치됨
+- HashMap은 내부에 '키'와 '값'을 저장하는 자료 구조를 가지고 있다. HashMap은 해시 함수를 통해 '키'와 '값'이 저장되는 위치를 결정하므로, 사용자는 그 위치를 알 수 없고, 삽입되는 순서와 들어 있는 위치 또한 관계가 없음 
+
+##### (2) HashMap 선언 
+```java
+HashMap<String,String> map1 = new HashMap<String,String>();//HashMap생성
+HashMap<String,String> map2 = new HashMap<>();//new에서 타입 파라미터 생략가능
+HashMap<String,String> map3 = new HashMap<>(map1);//map1의 모든 값을 가진 HashMap생성
+HashMap<String,String> map4 = new HashMap<>(10);//초기 용량(capacity)지정
+HashMap<String,String> map5 = new HashMap<>(10, 0.7f);//초기 capacity,load factor지정
+HashMap<String,String> map6 = new HashMap<String,String>(){{//초기값 지정
+    put("a","b");
+}};
+```
+
+##### (2) HashMap 값 추가
+```java
+HashMap<Integer,String> map = new HashMap<>();//new에서 타입 파라미터 생략가능
+map.put(1,"사과"); //값 추가
+map.put(2,"바나나");
+map.put(3,"포도");
+```
+
+
+##### (3) HashMap 값 삭제
+```java
+HashMap<Integer,String> map = new HashMap<Integer,String>(){{//초기값 지정
+    put(1,"사과");
+    put(2,"바나나");
+    put(3,"포도");
+}};
+map.remove(1); //key값 1 제거
+map.clear(); //모든 값 제거
+```
+
+##### (4) HashMap 값 출력 
+```java
+HashMap<Integer,String> map = new HashMap<Integer,String>(){{//초기값 지정
+    put(1,"사과");
+    put(2,"바나나");
+    put(3,"포도");
+}};
+System.out.println(map); //전체 출력 : {1=사과, 2=바나나, 3=포도}
+System.out.println(map.get(1));//key값 1의 value얻기 : 사과
+		
+```
+- entrySet() 활용
+```java
+//entrySet() 활용
+for (Entry<Integer, String> entry : map.entrySet()) {
+    System.out.println("[Key]:" + entry.getKey() + " [Value]:" + entry.getValue());
+}
+//[Key]:1 [Value]:사과
+//[Key]:2 [Value]:바나나
+//[Key]:3 [Value]:포도
+```
+
+- keySet() 활용
+```java
+//KeySet() 활용
+for(Integer i : map.keySet()){ //저장된 key값 확인
+    System.out.println("[Key]:" + i + " [Value]:" + map.get(i));
+}
+//[Key]:1 [Value]:사과
+//[Key]:2 [Value]:바나나
+//[Key]:3 [Value]:포도
+```
+
+
+
+
+##### (5) Iterator 사용
+```java
+HashMap<Integer,String> map = new HashMap<Integer,String>(){{//초기값 지정
+    put(1,"사과");
+    put(2,"바나나");
+    put(3,"포도");
+}};
+```
+- entrySet.iterator
+```java
+//entrySet().iterator()
+Iterator<Entry<Integer, String>> entries = map.entrySet().iterator();
+while(entries.hasNext()){
+    Map.Entry<Integer, String> entry = entries.next();
+    System.out.println("[Key]:" + entry.getKey() + " [Value]:" +  entry.getValue());
+}
+//[Key]:1 [Value]:사과
+//[Key]:2 [Value]:바나나
+//[Key]:3 [Value]:포도
+```
+- keySet.iterator
+```java
+//keySet().iterator()
+Iterator<Integer> keys = map.keySet().iterator();
+while(keys.hasNext()){
+    int key = keys.next();
+    System.out.println("[Key]:" + key + " [Value]:" +  map.get(key));
+}
+//[Key]:1 [Value]:사과
+//[Key]:2 [Value]:바나나
+//[Key]:3 [Value]:포도
+```
