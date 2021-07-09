@@ -187,3 +187,137 @@ while(keys.hasNext()){
 //[Key]:2 [Value]:바나나
 //[Key]:3 [Value]:포도
 ```
+
+<br>
+<hr>
+<br>
+
+### ✍ 3. Generic
+- 개요 : 우리가 흔히 쓰는 ArrayList는 어떻게 쓸까?
+- 보통 아래와 같이 쓴다. 
+```java
+ArrayList<Integer> list1 = new ArrayList<Integer>();
+ArrayList<String> list2 = new ArrayList<Integer>();
+```
+- 이렇게 타입을 미리 지정해주면 유연성이 떨어진다. 
+
+##### (1) 제네릭이란?
+- 제네릭은 위의 ArrayList와는 다르게 클래스 내부에서 지정하는 게 아닌 외부에서 사용자에 의해 지정되는 것을 의미한다. 즉, 타입을 미리 지정해주는 것이 아닌 필요에 의해 지정할 수 있도록 하는 일반(Generic) 타입이라는 것이다. 
+- 장점 
+  -  클래스 외부에서 타입을 지정해주기 때문에 따로 타입을 체크하고 변환해줄 필요가 없다. 즉, 관리하기가 편하다.
+  -  비슷한 기능을 지원하는 경우 코드의 재사용성이 높아진다.
+
+##### (2) 클래스 및 인터페이스 선언 
+- 기본
+```java
+public class ClassName <T> { ... }
+public Interface InterfaceName <T> { ... }
+```
+- 타입 두 개 선언
+```java
+public class ClassName <T, K> { ... }
+public Interface InterfaceName <T, K> { ... }
+```
+- 선언된 제네릭에 타입주기(int, double 등 primitive Type은 올 수 없고 Wrapper Type으로 줄 수 있다.)
+```java
+public class ClassName <T, K> { ... }
+ 
+public class Main {
+	public static void main(String[] args) {
+		ClassName<String, Integer> a = new ClassName<String, Integer>();
+	}
+}
+```
+
+##### (3) 제네릭 클래스 사용하기 
+- 기본
+```java
+// 제네릭 클래스
+class ClassName<E> {
+	
+	private E element;	// 제네릭 타입 변수
+	
+	void set(E element) {	// 제네릭 파라미터 메소드
+		this.element = element;
+	}
+	
+	E get() {	// 제네릭 타입 반환 메소드
+		return element;
+	}
+	
+}
+ 
+class Main {
+	public static void main(String[] args) {
+		
+		ClassName<String> a = new ClassName<String>();
+		ClassName<Integer> b = new ClassName<Integer>();
+		
+		a.set("10");
+		b.set(10);
+	
+		System.out.println("a data : " + a.get());
+		// 반환된 변수의 타입 출력 
+		System.out.println("a E Type : " + a.get().getClass().getName());
+		
+		System.out.println();
+		System.out.println("b data : " + b.get());
+		// 반환된 변수의 타입 출력 
+		System.out.println("b E Type : " + b.get().getClass().getName());
+		
+	}
+  // a data : 10
+  // a E Type : java.lang.String
+
+  // b.data : 10
+  // b E Type : java.lang.Integer
+
+}
+```
+- 두 개 사용
+```java
+// 제네릭 클래스 
+class ClassName<K, V> {	
+	private K first;	// K 타입(제네릭)
+	private V second;	// V 타입(제네릭) 
+	
+	void set(K first, V second) {
+		this.first = first;
+		this.second = second;
+	}
+	
+	K getFirst() {
+		return first;
+	}
+	
+	V getSecond() {
+		return second;
+	}
+}
+ 
+// 메인 클래스 
+class Main {
+	public static void main(String[] args) {
+		
+		ClassName<String, Integer> a = new ClassName<String, Integer>();
+		
+		a.set("10", 10);
+ 
+ 
+		System.out.println("  fisrt data : " + a.getFirst());
+		// 반환된 변수의 타입 출력 
+		System.out.println("  K Type : " + a.getFirst().getClass().getName());
+		
+		System.out.println("  second data : " + a.getSecond());
+		// 반환된 변수의 타입 출력 
+		System.out.println("  V Type : " + a.getSecond().getClass().getName());
+	}
+
+  // first data : 10
+  // K Type : java.lang.String
+
+  // second data : 10
+  // V Type : java.lang.Integer
+}
+
+```
