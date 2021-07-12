@@ -321,3 +321,50 @@ class Main {
 }
 
 ```
+<br>
+<br>
+<hr>
+
+### ✍ 3. KeyCode로 특정 키 막기
+
+
+- 키코드 표 
+<img src="/img/keycode.PNG" width="100%"></img>
+```java
+	// . + -  키코드로 막기
+		window.addEventListener("keydown", function (event) {
+		if (event.defaultPrevented) {
+			return;
+		}
+
+		var handled = false;
+
+  		// numlock - 입력 제한
+		if (event.keyCode ==109)
+    		handled = true;
+
+		// numlock + 입력 제한
+		else if (event.keyCode == 107)
+			handled = true;
+
+		// numlock . 입력 제한
+		else if(event.keyCode == 110)
+			handled = true;
+
+		// + 입력 제한
+		else if(event.keyCode == 189)
+			handled = true;
+
+		// - 입력 제한
+		else if(event.keyCode == 187)
+			handled = true;
+
+		// . 입력제한
+		else if(event.keyCode == 190)
+			handled = true;
+
+		if (handled) {
+			console.log(event.keyCode);
+			event.preventDefault();
+		}
+	}, true);
