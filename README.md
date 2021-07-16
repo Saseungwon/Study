@@ -1052,3 +1052,383 @@ public class AsyncConfig implements AsyncConfigurer {	// AsyncConfigurer 를 상
     @Resource(name = "executorSample")
     private ThreadPoolTaskExecutor executorSample;
 ```
+
+
+(3) AsyncConfigurer 상속 받아 클래스를 만들면 @Override 해야하는 함수 2개 존재
+- 1. getAsyncExecutor 
+- 2. Executor 
+```java
+@Bean(name = "executorSample")			// Bean Name 추가
+@Override
+public Executor getAsyncExecutor() {
+	ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+	executor.setCorePoolSize(TASK_SAMPLE_CORE_POOL_SIZE);	//pool size 지정
+	executor.setMaxPoolSize(TASK_SAMPLE_MAX_POOL_SIZE);	//최대 pool size 지정
+	executor.setQueueCapacity(TASK_SAMPLE_QUEUE_CAPACITY);	//queue size 지정
+	executor.setBeanName(EXECUTOR_SAMPLE_BEAN_NAME);	// bean name 지정 
+	executor.initialize();
+	return executor;
+}
+```
+
+(4) getAsyncUncaughtExceptionHandler 함수 : ExceptionHandler 연결하는 함수 
+```java
+  @Override
+    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+```
+
+(5) task를 생성하기 전에 pool이 모두 찼는지를 체크하는 함수(생략가능)
+```java
+    /**
+     * 샘플 Thread 등록 가능 여부
+     *
+     * @return 실행중인 task 개수가 최대 개수(max + queue)보다 크거나 같으면 false
+     */
+    public boolean isSampleTaskExecute() {
+        boolean rtn = true;
+ 
+        System.out.println("EXECUTOR_SAMPLE.getActiveCount() : " + executorSample.getActiveCount());
+ 
+        // 실행중인 task 개수가 최대 개수(max + queue)보다 크거나 같으면 false
+        if (executorSample.getActiveCount() >= (TASK_SAMPLE_MAX_POOL_SIZE + TASK_SAMPLE_QUEUE_CAPACITY)) {
+            rtn = false;
+        }
+ 
+        return rtn;
+    }
+ 
+    /**
+     * 샘플 Thread 등록 가능 여부
+     *
+     * @param createCnt : 생성 개수
+     * @return 실행중인 task 개수 + 실행할 개수가 최대 개수(max + queue)보다 크면 false
+     */
+    public boolean isSampleTaskExecute(int createCnt) {
+        boolean rtn = true;
+ 
+        // 실행중인 task 개수 + 실행할 개수가 최대 개수(max + queue)보다 크거나 같으면 false
+        if ((executorSample.getActiveCount() + createCnt) > (TASK_SAMPLE_MAX_POOL_SIZE + TASK_SAMPLE_QUEUE_CAPACITY)) {
+            rtn = false;
+        }
+ 
+        return rtn;
+    }
+```
+<br>
+
+ **다중 생성을 위해 하나 더 추가한 전체 코드**
+
+ AsyncConfig.java
+```java
+import java.util.concurrent.Executor;
+ 
+import javax.annotation.Resource;
+ 
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+ 
+@Configuration
+@EnableAsync
+public class AsyncConfig implements AsyncConfigurer {
+    /** 샘플 기본 Thread 수 */
+    private static int TASK_SAMPLE_CORE_POOL_SIZE = 2;
+    /** 샘플 최대 Thread 수 */
+    private static int TASK_SAMPLE_MAX_POOL_SIZE = 5;
+    /** 샘플 QUEUE 수 */
+    private static int TASK_SAMPLE_QUEUE_CAPACITY = 0;
+    /** 샘플 Thread Bean Name */
+    private static String EXECUTOR_SAMPLE_BEAN_NAME = "executorSample";
+    /** 샘플 Thread */
+    @Resource(name = "executorSample")
+    private ThreadPoolTaskExecutor executorSample;
+ 
+    /** 기타 기본 Thread 수 */
+    private static int TASK_ETC_CORE_POOL_SIZE = 5;
+    /** 기타 최대 Thread 수 */
+    private static int TASK_ETC_MAX_POOL_SIZE = 10;
+    /** 기타 QUEUE 수 */
+    private static int TASK_ETC_QUEUE_CAPACITY = 0;
+    /** 기타 Thread Bean Name */
+    private static String EXECUTOR_ETC_BEAN_NAME = "executorEtc";
+    /** 기타 Thread */
+    @Resource(name = "executorEtc")
+    private ThreadPoolTaskExecutor executorEtc;
+ 
+    /**
+     * 샘플 Thread 생성
+     *
+     * @return
+     */
+    @Bean(name = "executorSample")
+    @Override
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(TASK_SAMPLE_CORE_POOL_SIZE);
+        executor.setMaxPoolSize(TASK_SAMPLE_MAX_POOL_SIZE);
+        executor.setQueueCapacity(TASK_SAMPLE_QUEUE_CAPACITY);
+        executor.setBeanName(EXECUTOR_SAMPLE_BEAN_NAME);
+        executor.initialize();
+        return executor;
+    }
+ 
+    /**
+     * 샘플 Thread 등록 가능 여부
+     *
+     * @return 실행중인 task 개수가 최대 개수(max + queue)보다 크거나 같으면 false
+     */
+    public boolean isSampleTaskExecute() {
+        boolean rtn = true;
+ 
+        System.out.println("EXECUTOR_SAMPLE.getActiveCount() : " + executorSample.getActiveCount());
+ 
+        // 실행중인 task 개수가 최대 개수(max + queue)보다 크거나 같으면 false
+        if (executorSample.getActiveCount() >= (TASK_SAMPLE_MAX_POOL_SIZE + TASK_SAMPLE_QUEUE_CAPACITY)) {
+            rtn = false;
+        }
+ 
+        return rtn;
+    }
+ 
+    /**
+     * 샘플 Thread 등록 가능 여부
+     *
+     * @param createCnt : 생성 개수
+     * @return 실행중인 task 개수 + 실행할 개수가 최대 개수(max + queue)보다 크면 false
+     */
+    public boolean isSampleTaskExecute(int createCnt) {
+        boolean rtn = true;
+ 
+        // 실행중인 task 개수 + 실행할 개수가 최대 개수(max + queue)보다 크거나 같으면 false
+        if ((executorSample.getActiveCount() + createCnt) > (TASK_SAMPLE_MAX_POOL_SIZE + TASK_SAMPLE_QUEUE_CAPACITY)) {
+            rtn = false;
+        }
+ 
+        return rtn;
+    }
+ 
+    /**
+     * 기타 Thread 생성
+     *
+     * @return
+     */
+    @Bean(name = "executorEtc")
+    @Qualifier
+    public Executor taskExecutorEtc() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(TASK_ETC_CORE_POOL_SIZE);
+        executor.setMaxPoolSize(TASK_ETC_MAX_POOL_SIZE);
+        executor.setQueueCapacity(TASK_ETC_QUEUE_CAPACITY);
+        executor.setBeanName(EXECUTOR_ETC_BEAN_NAME);
+        executor.initialize();
+        return executor;
+    }
+ 
+    /**
+     * 기타 Thread 등록 가능 여부
+     *
+     * @return 실행중인 task 개수가 최대 개수(max + queue)보다 크거나 같으면 false
+     */
+    public boolean isEtcTaskExecute() {
+        boolean rtn = true;
+ 
+        // 실행중인 task 개수가 최대 개수(max + queue)보다 크거나 같으면 false
+        if (executorEtc.getActiveCount() >= (TASK_ETC_MAX_POOL_SIZE + TASK_ETC_QUEUE_CAPACITY)) {
+            rtn = false;
+        }
+ 
+        return rtn;
+    }
+ 
+    /**
+     * 기타 Thread 등록 가능 여부
+     *
+     * @param createCnt : 생성 개수
+     * @return 실행중인 task 개수 + 실행할 개수가 최대 개수(max + queue)보다 크면 false
+     */
+    public boolean isEtcTaskExecute(int createCnt) {
+        boolean rtn = true;
+ 
+        // 실행중인 task 개수 + 실행할 개수가 최대 개수(max + queue)보다 크거나 같으면 false
+        if ((executorEtc.getActiveCount() + createCnt) > (TASK_ETC_MAX_POOL_SIZE + TASK_ETC_QUEUE_CAPACITY)) {
+            rtn = false;
+        }
+ 
+        return rtn;
+    }
+ 
+    /* (non-Javadoc)
+     * @see org.springframework.scheduling.annotation.AsyncConfigurer#getAsyncUncaughtExceptionHandler()
+     */
+    @Override
+    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+        return new AsyncExceptionHandler();
+    }
+}
+```
+
+
+(6) 생성된 Executor 인 executorSample 과 연결할 AsyncTask class 파일
+```java
+@Service("asyncTaskSample")
+public class AsyncTaskSample {
+
+}
+```
+(7) task 생성 
+- 리턴타입은 void와 Future<String> 두 가지로 작성 가능
+- @Async 사용시 제약사항
+  - 1. 함수는 무조건 public 타입이어야 한다.
+  - 2. 같은 클래스 안에서 셀프호출 안 됨. 
+```java
+    @Async("executorSample") 
+	//@Async 를 사용해서 비동기 메소드라고 선언하고 연결할 Executor 명을 적어준다.
+
+    public void executorSample(String str) {
+        // LOG : 시작 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD START");
+        
+        // 내용
+        // 내용
+        // 내용
+        
+        // LOG : 종료 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD END");
+    }
+ 
+    @Async("executorSample")
+	//@Async 를 사용해서 비동기 메소드라고 선언하고 연결할 Executor 명을 적어준다.
+
+    public void executorSample2(String str) {
+        // LOG : 시작 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD START");
+        
+        // 내용
+        // 내용		비동기로 할 작업을 코딩하거나 함수를 호출하면 됨 
+        // 내용
+        
+        // LOG : 종료 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD END");
+    }
+```
+
+**전체 코드**
+
+AsyncTaskSample.java
+```java
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+ 
+/**
+ * @Title      : AsyncTaskSample 관리
+ * @Filename   : AsyncTaskSample.java
+ */
+@Service("asyncTaskSample")
+public class AsyncTaskSample {
+    
+    /**
+     * 시뮬레이션 테스트용 함수
+     *
+     * @param str
+     */
+    @Async("executorSample")
+    public void executorSample(String str) {
+        // LOG : 시작 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD START");
+        
+        // 내용
+        // 내용
+        // 내용
+        
+        // LOG : 종료 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD END");
+    }
+    
+    /**
+     * 시뮬레이션 테스트용 함수2
+     *
+     * @param str
+     */
+    @Async("executorSample")
+    public void executorSample2(String str) {
+        // LOG : 시작 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD START");
+        
+        // 내용
+        // 내용
+        // 내용
+        
+        // LOG : 종료 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD END");
+    }
+}
+```
+
+AsyncTaskEtc.java
+```java
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+ 
+/**
+ * @Title      : AsyncTaskEtc 관리
+ * @Filename   : AsyncTaskEtc.java
+ */
+@Service("asyncTaskEtc")
+public class AsyncTaskEtc {
+    
+    /**
+     * 기타 스레드 테스트용 함수
+     *
+     * @param str
+     */
+    @Async("executorEtc")
+    public void executorEtc(String str) {
+        // LOG : 시작 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD START");
+        
+        // 내용
+        // 내용
+        // 내용
+        
+        // LOG : 종료 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD END");
+    }
+    
+    /**
+     * 기타 스레드 테스트용 함수2
+     *
+     * @param str
+     */
+    @Async("executorEtc")
+    public void executorEtc2(String str) {
+        // LOG : 시작 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD START");
+ 
+        // 내용
+        // 내용
+        // 내용
+        
+        // LOG : 종료 입력
+        // ...
+        System.out.println("==============>>>>>>>>>>>> THREAD END");
+    }
+}
+```
