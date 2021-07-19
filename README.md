@@ -1433,4 +1433,34 @@ public class AsyncTaskEtc {
 }
 ```
 	
-	
+<br>
+<br>
+<hr>
+
+## ✍ 7. 로그아웃 후 뒤로가기 방지  
+
+### 1. 설정으로 해결
+```java
+<mvc:interceptor>
+    <mvc:mapping path="/**/*" />
+    <beans:bean id="webContentInterceptor" class="org.springframework.web.servlet.mvc.WebContentInterceptor">
+	<beans:property name="cacheSeconds" value="0" />
+
+          <beans:property name="useExpiresHeader" value="true" />
+	<beans:property name="useCacheControlHeader" value="true" />
+	<beans:property name="useCacheControlNoStore" value="true" />
+    </beans:bean>
+</mvc:interceptor>	
+```
+### 2. 스크립트로 막기
+- script
+```java
+	window.history.forward();
+	function noBack() {
+		window.history.forward();
+	}
+```
+- body
+```java
+<body onload="noBack();" onpageshow="if(event.persisted) noBack();" onunload="">	
+```
