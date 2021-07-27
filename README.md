@@ -382,6 +382,27 @@ class Main {
 ```java
  /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
 ```
+- 전화번호 정규식 하이픈 자동으로 넣어주기
+```java
+//input 안에 class phoneNumber 넣기 
+$(document)
+.on(
+		"keyup",
+		".phoneNumber",
+		function() {
+			$(this)
+					.val(
+							$(this)
+									.val()
+									.replace(/[^0-9]/g, "")
+									.replace(
+											/(^02|^0505|^1[0-9]{3}|^0[0-9]{2})([0-9]+)?([0-9]{4})$/,
+											"$1-$2-$3").replace(
+											"--", "-"));
+		});
+
+```
+
 <br>
 <br>
 <hr>
