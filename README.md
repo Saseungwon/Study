@@ -1488,3 +1488,9 @@ public class AsyncTaskEtc {
 ```java
 <body onload="noBack();" onpageshow="if(event.persisted) noBack();" onunload="">	
 ```
+	
+	<br>
+<br>
+<hr>
+
+## ✍ 8. 특정 확장자 파일 
