@@ -1494,3 +1494,26 @@ public class AsyncTaskEtc {
 <hr>
 
 ## ✍ 8. 특정 확장자 파일 
+```java
+										<c:when test="${empty update.programId || update.programId eq ''}">
+											<div class="area_filebox">
+												<input type="text" class="upload_name" disabled="disabled" title="첨부파일명이 표시됩니다.">
+												<label for="menu_item09">파일찾기</label>
+												<input type="file" class="upload_hidden" id="menu_item09" name="programImageFile" onchange="fileExtChange()" value="${update.programImage}" title="프로그램 이미지">
+											</div>	
+```
+
+```java
+	function fileExtChange() {
+		var fileName = $("input[name=programImageFile]").val();
+		var fileExt = fileName.split(".")[1];
+
+		if(fileExt == "jpg" || fileExt == "png" || fileExt == "bmp" || fileExt == "gif" || fileExt == "tif" || fileExt == "JPG" || fileExt == "PNG" || fileExt == "BMP" || fileExt == "GIF" || fileExt == "TIF") {}
+		else {
+			$("input[name=programImageFile]").val("");
+			$(".upload_name").val("");
+			alert("이미지 확장자만 첨부 가능합니다.");
+			return false;
+		}
+	}	
+```
