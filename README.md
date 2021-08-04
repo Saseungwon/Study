@@ -1517,3 +1517,26 @@ public class AsyncTaskEtc {
 		}
 	}	
 ```
+											
+											
+<br>
+<br>
+<hr>
+
+## ✍ 9. input number maxlength 적용하기
+```java
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+   
+  function maxLengthCheck(object){
+    if (object.value.length > object.maxLength){
+      object.value = object.value.slice(0, object.maxLength);
+    }    
+  }
+  
+</script>
+
+<input type="number" maxlength="4" oninput="maxLengthCheck(this)"/>											
+											
+```
